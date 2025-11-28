@@ -1,0 +1,13 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: devops-lab-minio
+    ports:
+      - "9000:9000" # API (dla skryptów)
+      - "9001:9001" # Panel WWW (dla Ciebie)
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123 # Hasło do laba
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio_data:/data # Tu fizycznie zapiszą się pliki na Twoim Macu
