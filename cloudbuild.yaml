@@ -1,0 +1,17 @@
+steps:
+  - name: 'python:3.10'
+    id: 'Ansible Syntax Check'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🚀 Starting CI/CD pipeline..."
+        echo "📦 Installing Ansible..."
+        pip install ansible
+        echo "✅ Ansible installed successfully! Version:"
+        ansible --version
+        echo "🔍 Listing repository files:"
+        ls -la
+        echo "🛠️ Running playbook syntax check..."
+        # NOTE: Replace 'playbook.yml' with the exact name of your file!
+        ansible-playbook --syntax-check deploy.yml
