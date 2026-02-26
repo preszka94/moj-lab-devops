@@ -1,0 +1,14 @@
+---
+- name: Deploy SafeDoc scripts
+  hosts: backend
+  tasks:
+    - name: Ensure target directory exists
+      file:
+        path: /tmp/safedoc/scripts
+        state: directory
+
+    - name: Copy test_minio.py script to the server
+      copy:
+        src: ./scripts/test_minio.py
+        dest: /tmp/safedoc/scripts/test_minio.py
+        mode: '0755'
