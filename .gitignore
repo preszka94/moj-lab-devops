@@ -2,3 +2,4 @@ venv/
 docker/minio_data/
 .DS_Store
 test_plik.txt
+__pycache__/
