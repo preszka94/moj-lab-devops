@@ -15,3 +15,5 @@ steps:
         echo "🛠️ Running playbook syntax check..."
         # NOTE: Replace 'playbook.yml' with the exact name of your file!
         ansible-playbook --syntax-check deploy.yml
+options:
+  logging: CLOUD_LOGGING_ONLY
