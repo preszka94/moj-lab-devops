@@ -1,19 +1,30 @@
 steps:
   - name: 'python:3.10'
-    id: 'Ansible Syntax Check'
+    id: 'Tailscale & Ansible Deployment'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         echo "🚀 Starting CI/CD pipeline..."
-        echo "📦 Installing Ansible..."
+        
+        echo "📦 Installing dependencies (Ansible & sshpass)..."
+        apt-get update && apt-get install -y sshpass curl
         pip install ansible
-        echo "✅ Ansible installed successfully! Version:"
-        ansible --version
-        echo "🔍 Listing repository files:"
-        ls -la
-        echo "🛠️ Running playbook syntax check..."
-        # NOTE: Replace 'playbook.yml' with the exact name of your file!
-        ansible-playbook -i hosts.ini --syntax-check deploy.yml
+        
+        echo "🌐 Installing Tailscale..."
+        curl -fsSL https://tailscale.com/install.sh | sh
+        
+        echo "🔐 Starting Tailscale daemon..."
+        tailscaled &
+        sleep 5
+        
+        echo "🔑 Connecting to private Tailnet..."
+        tailscale up --authkey=tskey-auth-kPHgHnXz2R11CNTRL-s6pEZsnpPzTSumwKd3boyT4BeA734XFV6 --hostname=gcp-cloud-build
+        
+        echo "🛠️ Running Ansible Playbook..."
+        ansible-playbook -i hosts.ini deploy.yml
+        
+        echo "�� Disconnecting and cleaning up..."
+        tailscale logout
 options:
   logging: CLOUD_LOGGING_ONLY
