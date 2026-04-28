@@ -1,0 +1,50 @@
+---
+- name: Inspect local Mac
+  hosts: local
+  gather_facts: true
+
+  tasks:
+    - name: Show basic system facts
+      debug:
+        msg:
+          - "Hostname: {{ ansible_facts['hostname'] }}"
+          - "OS family: {{ ansible_facts['os_family'] }}"
+          - "Distribution: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "Kernel: {{ ansible_facts['kernel'] }}"
+          - "Architecture: {{ ansible_facts['architecture'] }}"
+          - "Ansible user: {{ ansible_facts['user_id'] }}"
+          - "Python executable: {{ ansible_facts['python']['executable'] }}"
+
+    - name: Show Homebrew ansible path from shell
+      command: which ansible
+      register: ansible_path
+      changed_when: false
+
+    - name: Print ansible command path
+      debug:
+        var: ansible_path.stdout
+
+    - name: Check git version
+      command: git --version
+      register: git_version
+      changed_when: false
+
+    - name: Show git version
+      debug:
+        var: git_version.stdout
+
+    - name: Check default python3 path
+      command: which python3
+      register: python3_path
+      changed_when: false
+
+    - name: Show default python3 path
+      debug:
+        var: python3_path.stdout
+
+    - name: Check docker version
+      command: docker --version
+      register: docker_version
+      changed_when: false
+      failed_when: false
+

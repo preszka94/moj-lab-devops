@@ -1,0 +1,61 @@
+---
+# This indicates the start of a YAML document.
+- name: Deploy SafeDoc Backend Application
+
+  # Targets the server defined in hosts.ini.
+  hosts: linux_lab
+
+  # Executes all following tasks with root privileges.
+  become: yes
+
+  # Marks the beginning of the list of actions.
+  tasks:
+    # TASK 1: Installing Python Libraries
+    - name: Install required Python libraries
+      # 'pip' calls the Ansible module to manage Python packages.
+      pip:
+        # The list of Python libraries required by our backend application.
+        name:
+          - boto3
+          - oracledb
+          - google-cloud-documentai
+        # Explicitly targets the pip executable we compiled from source.
+        executable: /usr/local/bin/pip3.9
+
+    # TASK 2: Creating the Directory Structure
+    - name: Create application directory structure
+      # 'file' manages files and directories.
+      file:
+        # The absolute path on the target server.
+        path: /opt/safedoc/scripts
+        # Instructs Ansible to create a directory.
+        state: directory
+        # Sets permissions: owner has full access, others have read and execute.
+        mode: "0755"
+
+    # TASK 3: Copying the Python Application
+    - name: Copy backend script to server
+      # 'copy' securely transfers files from the control node to the managed node.
+      copy:
+        # The local file path.
+        src: ./scripts/backend_app.py
+        # The remote destination path.
+        dest: /opt/safedoc/scripts/backend_app.py
+        # Ensures the file is executable.
+        mode: "0755"
+
+    # TASK 4: Copying GCP Credentials
+    - name: Copy GCP credentials to server
+      copy:
+        src: ./scripts/gcp-credentials.json
+        dest: /opt/safedoc/scripts/gcp-credentials.json
+        # Strict permissions: only the file owner can read or write.
+        mode: "0600"
+
+    # TASK 5: Copying the Bash Batch Processor
+    - name: Copy batch processor script to server
+      copy:
+        src: ./process_all.sh
+        dest: /opt/safedoc/process_all.sh
+        # Ensures the script is executable.
+        mode: "0755"
