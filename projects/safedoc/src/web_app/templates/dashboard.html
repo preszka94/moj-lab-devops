@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SafeDoc: Corporate Settlement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 text-gray-200 p-8 font-sans">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-3xl font-bold text-blue-400">Corporate Settlement Dashboard</h1>
+            <div class="flex space-x-4">
+                <a href="/trading"
+                    class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded text-sm font-semibold transition border border-slate-600">Trading
+                    Operations</a>
+                <a href="/trade_theory"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm font-semibold transition text-white shadow-lg shadow-blue-500/30">Trade
+                    Simulator</a>
+            </div>
+        </div>
+
+        <div class="bg-slate-800 rounded-lg shadow-xl border border-slate-700 overflow-hidden">
+            <div class="p-4 border-b border-slate-700 bg-slate-800/50">
+                <h2 class="text-lg font-semibold text-white">Processed Invoices</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr
+                            class="bg-slate-900/50 text-xs text-gray-400 uppercase tracking-wider border-b border-slate-700">
+                            <th class="p-4 font-medium">UUID</th>
+                            <th class="p-4 font-medium">Seller Name</th>
+                            <th class="p-4 font-medium">Total Amount</th>
+                            <th class="p-4 font-medium">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700">
+                        {% for row in invoices %}
+                        <tr class="hover:bg-slate-700/50 transition duration-150">
+                            <td class="p-4 text-sm font-mono text-gray-400">{{ row[0] }}</td>
+                            <td class="p-4 text-sm text-gray-200 font-medium">{{ row[1] }}</td>
+                            <td class="p-4 text-sm font-semibold text-green-400">{{ row[2] }}</td>
+                            <td class="p-4 text-sm">
+                                <span
+                                    class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs border border-blue-500/30">{{
+                                    row[3] }}</span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="p-12 text-center text-gray-500 italic">No invoices found or database
+                                connection failed.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

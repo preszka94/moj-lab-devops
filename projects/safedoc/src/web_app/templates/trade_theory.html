@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Trade Theory Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-gray-200 p-8 font-sans">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-blue-400">Tariff Impact Simulator</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-slate-800 p-6 rounded-lg shadow-xl border border-slate-700">
+                <h2 class="text-xl font-semibold mb-4 text-white">Market Controls</h2>
+                
+                <label class="block mb-2 text-sm">World Price: $<span id="wp-val">40</span></label>
+                <input type="range" id="worldPrice" min="10" max="80" value="40" class="w-full mb-6">
+                
+                <label class="block mb-2 text-sm">Tariff Amount: $<span id="t-val">15</span></label>
+                <input type="range" id="tariff" min="0" max="40" value="15" class="w-full mb-6">
+
+                <div class="mt-6 p-4 bg-slate-900 rounded border border-slate-700">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2">ECONOMIC IMPACT</h3>
+                    <p class="text-sm">Price w/ Tariff: <span id="pt-val" class="text-red-400 font-bold"></span></p>
+                    <p class="text-sm">Imports: <span id="imp-val" class="text-blue-400 font-bold"></span> units</p>
+                    <p class="text-sm">Gov Revenue: $<span id="rev-val" class="text-green-400 font-bold"></span></p>
+                </div>
+            </div>
+
+            <div class="col-span-2 bg-slate-800 p-6 rounded-lg shadow-xl border border-slate-700">
+                <canvas id="marketChart" height="150"></canvas>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('marketChart').getContext('2d');
+        
+        let demandData = [];
+        let supplyData = [];
+        let labels = [];
+        for(let q = 0; q <= 100; q += 10) {
+            labels.push(q);
+            demandData.push(100 - q); 
+            supplyData.push(q);       
+        }
+
+        const marketChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Demand', data: demandData, borderColor: '#3b82f6', fill: false, tension: 0 },
+                    { label: 'Supply', data: supplyData, borderColor: '#ef4444', fill: false, tension: 0 },
+                    { label: 'World Price', data: [], borderColor: '#10b981', borderDash: [5, 5], fill: false, tension: 0 },
+                    { label: 'Price + Tariff', data: [], borderColor: '#f59e0b', fill: false, tension: 0 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Quantity', color: '#9ca3af' }, grid: { color: '#374151' } },
+                    y: { title: { display: true, text: 'Price ($)', color: '#9ca3af' }, grid: { color: '#374151' }, min: 0, max: 100 }
+                },
+                plugins: { legend: { labels: { color: '#e5e7eb' } } }
+            }
+        });
+
+        function updateChart() {
+            const wp = parseInt(document.getElementById('worldPrice').value);
+            const tariff = parseInt(document.getElementById('tariff').value);
+            const pt = wp + tariff;
+
+            document.getElementById('wp-val').innerText = wp;
+            document.getElementById('t-val').innerText = tariff;
+            document.getElementById('pt-val').innerText = "$" + pt;
+
+            let domDemand = 100 - pt;
+            let domSupply = pt;
+            let imports = Math.max(0, domDemand - domSupply);
+            let revenue = imports * tariff;
+
+            document.getElementById('imp-val').innerText = imports;
+            document.getElementById('rev-val').innerText = revenue;
+
+            let wpLine = Array(11).fill(wp);
+            let ptLine = Array(11).fill(pt);
+
+            marketChart.data.datasets[2].data = wpLine;
+            marketChart.data.datasets[3].data = ptLine;
+            marketChart.update();
+        }
+
+        document.getElementById('worldPrice').addEventListener('input', updateChart);
+        document.getElementById('tariff').addEventListener('input', updateChart);
+        
+        updateChart();
+    </script>
+</body>
+</html>

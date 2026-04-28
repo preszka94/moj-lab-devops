@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Investment Banking: Trading Desk Operations</title>
+</head>
+<body>
+    <h1>Trading Desk Operations & Settlement</h1>
+    
+    <h2>1. Financial Instruments</h2>
+    <ul>
+        <li><strong>Equities:</strong> Ownership shares in a publicly traded company. They represent a claim on part of the corporation's assets and earnings.</li>
+        <li><strong>Leveraged Products:</strong> Instruments like Options, Futures, and Margin trading. They allow traders to gain large market exposure with a relatively small initial capital outlay, amplifying both potential profits and potential losses.</li>
+    </ul>
+
+    <h2>2. The Trade Lifecycle</h2>
+    <ol>
+        <li><strong>Execution:</strong> The trader agrees to a price and quantity in the market.</li>
+        <li><strong>Booking:</strong> The trade details are captured in the bank's internal risk and position management systems.</li>
+        <li><strong>Confirmation:</strong> Both counterparties verify and agree on the exact details of the executed trade.</li>
+        <li><strong>Settlement:</strong> The actual exchange of the financial instrument for cash (often T+2, meaning two days after the trade date).</li>
+    </ol>
+    
+
+    <h2>3. Troubleshooting: Missing Prices in Horizon GUI</h2>
+    <p>If a product is not displaying a price in the Horizon trading GUI, check the following root causes:</p>
+    <ul>
+        <li><strong>Market Data Feed Issue:</strong> The connection to the exchange (like Bloomberg or Reuters) may be down or dropping packets.</li>
+        <li><strong>Trading Suspension:</strong> The exchange may have halted trading on that specific product due to volatility or pending news.</li>
+        <li><strong>Liquidity Drought:</strong> There may be zero active bids or asks in the market for an obscure or illiquid instrument.</li>
+        <li><strong>Configuration Error:</strong> The instrument may not be mapped correctly in the bank's internal instrument database.</li>
+    </ul>
+</body>
+</html>
