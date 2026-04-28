@@ -1,36 +1,40 @@
 import boto3
-from botocore.exceptions import NoCredentialsError
+from botocore.exceptions import NoCredentialsError, ClientError
+import sys
 
-# Konfiguracja połączenia z naszym lokalnym MinIO
+# Connection configuration to our local MinIO
 s3 = boto3.client('s3',
-    endpoint_url='http://localhost:9000', # Zwróć uwagę: port 9000 (API), a nie 9001 (Konsola)
-    aws_access_key_id='admin',     # TU WPISZ SWÓJ LOGIN (z docker-compose)
-    aws_secret_access_key='password123'  # TU WPISZ SWOJE HASŁO (z docker-compose)
+    endpoint_url='http://localhost:9000', # Note: port 9000 (API), not 9001 (Console)
+    aws_access_key_id='admin',     # ENTER YOUR LOGIN HERE (from docker-compose)
+    aws_secret_access_key='password123'  # ENTER YOUR PASSWORD HERE (from docker-compose)
 )
 
 bucket_name = 'devops-test-bucket'
-file_name = 'test_plik.txt'
-content = 'Witaj MinIO! To jest test z Pythona.'
+file_name = 'test_file.txt'
+content = 'Hello MinIO! This is a test from Python.'
 
-def upload_to_minio():
+def create_bucket_and_upload():
+    # STEP 1: Safely create a bucket
     try:
-        # 1. Najpierw tworzymy "kubełek" (bucket) na dane
-        # W prawdziwym AWS S3 nazwy bucketów muszą być unikalne na świecie!
-        print(f"Tworzę bucket: {bucket_name}...")
         s3.create_bucket(Bucket=bucket_name)
+        print(f"✅ Bucket '{bucket_name}' created successfully.")
+    except ClientError as e:
+        # If the bucket exists, an error will appear, but we catch it and move on 🔄
+        print(f"ℹ️ Info: Bucket already exists or another error occurred. Moving on!")
 
-        # 2. Tworzymy przykładowy plik lokalnie
-        with open(file_name, 'w') as f:
-            f.write(content)
+    # Prepare local test file
+    with open(file_name, 'w') as f:
+        f.write(content)
 
-        # 3. Wysyłamy plik do MinIO
-        print(f"Wysyłam plik {file_name}...")
-        s3.upload_file(file_name, bucket_name, file_name)
-        
-        print("Sukces! ✅ Sprawdź w przeglądarce, czy plik się pojawił.")
-
-    except Exception as e:
-        print(f"Coś poszło nie tak: {e}")
+    # STEP 2: Safely upload file (this will always execute, regardless of Step 1)
+    try:
+        s3.upload_file(file_name, bucket_name, 'invoice_001.txt')
+        print(f"✅ File '{file_name}' uploaded to MinIO as 'invoice_001.txt'.")
+        sys.exit(0) # Returns code 0 (success) for future Bash/ADO pipelines [cite: 280]
+    except ClientError as e:
+        print(f"❌ Error uploading file: {e}")
+        sys.exit(1) # Returns code 1 (error), which would stop the pipeline [cite: 280, 294]
 
 if __name__ == '__main__':
-    upload_to_minio()
+    
+    create_bucket_and_upload()
