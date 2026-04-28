@@ -36,6 +36,7 @@ def dashboard():
     invoices = []
     conn = get_db_connection()
     if conn:
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT uuid, seller_name, total_amount, status FROM invoice_metadata")
@@ -43,8 +44,10 @@ def dashboard():
         except Exception as e:
             print(f"Error fetching invoices: {e}")
         finally:
-            cursor.close()
-            conn.close()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
             
     # Instruct Flask to locate the file 'dashboard.html' inside the 'templates' folder and send it to the user's browser.
     return render_template('dashboard.html', invoices=invoices)

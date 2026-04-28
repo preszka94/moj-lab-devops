@@ -1,4 +1,4 @@
-# Import the Flask class to create our web application, and render_template to serve HTML files.
+No, let's # Import the Flask class to create our web application, and render_template to serve HTML files.
 from flask import Flask, render_template
 
 # Import the Oracle database driver to allow our Python code to talk to the Oracle database.
