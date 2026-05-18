@@ -1,5 +1,31 @@
+# Python virtual environments
 venv/
-docker/minio_data/
-.DS_Store
-test_plik.txt
+.venv/
+ENV/
+
+# Python bytecode
 __pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# Scratch / test files
+test_plik.txt
+
+# SafeDoc runtime data (MinIO object storage)
+docker/minio_data/
+
+# --- Secrets ---
+# Never commit credentials, recovery codes, or private keys.
+# (See notes/audit-2026-05-18.md in trader-workstation-platform/ for
+# the cleanup of the existing secrets that slipped in earlier.)
+.env
+.env.local
+.env.*.local
+*credentials*.json
+*service-account*.json
+*-key.json
+*recovery-codes*
+*.key
+*.pem

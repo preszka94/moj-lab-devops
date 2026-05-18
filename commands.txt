@@ -1,9 +1,0 @@
-docker exec -it oracle-free sqlplus / as sysdba
-docker exec -it oracle-free sqlplus system/admin123@localhost:1521/FREEPDB1
-docker cp scripts/view_invoices.sql oracle-free:/tmp/view_invoices.sql
-
-
-
-ALTER USER system IDENTIFIED BY admin123 CONTAINER=ALL;
-./process_all.sh
-python3 scripts/backend_app.py
