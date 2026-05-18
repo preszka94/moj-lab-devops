@@ -1,0 +1,31 @@
+
+services:
+  backend:
+    # Build the backend service from the Dockerfile.
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    # Container name for easy reference.
+    container_name: trader-backend
+    
+    # Map port 8000 inside the container to port 8000 on localhost.
+    ports:
+      - "8000:8000"
+    
+    # Connect to the trader-network.
+    networks:
+      - trader-network
+    
+    # Environment variables (useful for configuration in later phases).
+    environment:
+      - PYTHONUNBUFFERED=1
+    
+    # Restart policy: restart if the container crashes.
+    restart: unless-stopped
+
+# Define a named network for inter-service communication.
+# Later, we'll add nginx and OracleDB to this network.
+networks:
+  trader-network:
+    driver: bridge
