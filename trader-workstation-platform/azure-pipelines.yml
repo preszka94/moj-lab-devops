@@ -1,0 +1,13 @@
+# Smoke-test pipeline: proves the GitHub <-> Azure DevOps connection works.
+# Not a real deploy yet — no app build, no VM. Just confirms the wiring.
+
+trigger:
+  - main              # fires on every push to main
+
+pool:
+  vmImage: 'ubuntu-latest'   # Microsoft-hosted agent — fine for a throwaway test.
+                              # NOT the self-hosted on-prem agent (Phase 6+).
+
+steps:
+  - script: echo "Trader desk CI check: pipeline wiring confirmed"
+    displayName: 'Confirm pipeline connectivity'
