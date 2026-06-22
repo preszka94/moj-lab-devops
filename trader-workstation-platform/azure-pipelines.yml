@@ -9,5 +9,5 @@ pool:
                               # NOT the self-hosted on-prem agent (Phase 6+).
 
 steps:
-  - script: echo "Trader desk CI check: pipeline wiring confirmed"
+  - script: 'echo "Trader desk CI check: pipeline wiring confirmed"'
     displayName: 'Confirm pipeline connectivity'
