@@ -8,7 +8,6 @@ Traders and support staff use this API to fetch prices, manage risk, and execute
 from fastapi import FastAPI
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
 
 app = FastAPI(
     title="Trader Workstation Platform",
@@ -46,7 +45,7 @@ async def root():
     """
     return {
         "message": "trader-workstation-platform backend ok",
-        "timestamp": datetime().isoformat(),
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -58,11 +57,12 @@ async def health():
     """
     return {
         "status": "healthy",
-        "timestamp": datetime().isoformat(),
+        "timestamp": datetime.now().isoformat(),
         "service": "trader-workstation-platform",
     }
 
-@app.get("/positions", response_model=List[Position])
+
+@app.get("/positions", response_model=list[Position])
 async def get_positions():
     """
     Get current trading positions.
@@ -75,6 +75,7 @@ async def get_positions():
         Position(symbol="DBR 0% 2032", quantity=500000, avg_price=96.80, current_price=97.35),
         Position(symbol="EURUSD", quantity=1000000, avg_price=1.0850, current_price=1.0892),
     ]
+
 
 if __name__ == "__main__":
     import uvicorn
