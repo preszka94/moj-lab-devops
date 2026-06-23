@@ -37,3 +37,19 @@ settlement status (has the exchange of cash and security actually completed, or 
 it still pending), which is why the data model treats a position as a richer object
 than a simple symbol-and-quantity row — every one of those fields is something an
 ops team might need to see on a screen to know where a trade stands.
+
+## Settlement status
+
+Settlement status tracks whether a trade has actually moved from an agreement
+on paper into a completed exchange of cash and securities. A booked trade sits
+as PENDING until the counterparty's cash and your security (or vice versa) both
+actually change hands on the agreed value date; once that exchange clears, the
+trade becomes SETTLED and the position is real on the book. If the exchange
+doesn't happen by the expected date — most commonly because the seller doesn't
+actually have the security to deliver — the trade is marked FAILED, a
+"settlement fail." Ops teams watch this status closely: a PENDING trade still
+carries counterparty risk (you haven't received what you contracted for), and a
+FAILED trade can cascade — it may leave you unable to deliver a security you've
+separately promised to someone else, trigger compensation costs, and draw
+regulatory attention, since settlement fail rates are tracked as a sign of
+operational health.
