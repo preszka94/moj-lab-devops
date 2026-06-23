@@ -6,8 +6,8 @@ Traders and support staff use this API to fetch prices, manage risk, and execute
 """
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, field_validator, model_validator
+from datetime import datetime, date
 
 app = FastAPI(
     title="Trader Workstation Platform",
@@ -102,6 +102,55 @@ async def get_price(symbol: str):
     if quote is None:
         raise HTTPException(status_code=404, detail=f"No quote found for symbol: {symbol}")
     return PriceQuote(symbol=symbol, bid=quote["bid"], ask=quote["ask"])
+
+
+class TradeRequest(BaseModel):
+    """What a caller sends us to book a new repo trade."""
+    symbol: str
+    direction: str   # "REPO" (we borrow cash) or "REVERSE_REPO" (we lend cash)
+    notional: float  # cash amount, must be positive
+    rate: float       # repo rate, e.g. 0.038 for 3.8%
+    start_date: date
+    maturity_date: date
+
+    @field_validator("direction")
+    @classmethod
+    def direction_must_be_known(cls, v: str) -> str:
+        allowed = {"REPO", "REVERSE_REPO"}
+        if v not in allowed:
+            # Raising ValueError here is what becomes a 422 response automatically.
+            raise ValueError(f"direction must be one of {allowed}, got {v!r}")
+        return v
+
+    @field_validator("notional")
+    @classmethod
+    def notional_must_be_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("notional must be positive")
+        return v
+
+    @model_validator(mode="after")
+    def maturity_after_start(self):
+        if self.maturity_date <= self.start_date:
+            raise ValueError("maturity_date must be after start_date")
+        return self
+
+
+class TradeResponse(TradeRequest):
+    """Same shape as the request, plus the trade_id we assign on booking."""
+    trade_id: int
+
+# In-memory trade store. Phase 2 replaces this with a real Oracle table.
+TRADES: list[dict] = []
+
+
+@app.post("/trades", response_model=TradeResponse, status_code=201)
+async def create_trade(trade: TradeRequest):
+    """Book a new repo trade. 201 = "I created something", not the usual 200."""
+    trade_id = len(TRADES) + 1
+    record = {"trade_id": trade_id, **trade.model_dump()}
+    TRADES.append(record)
+    return record
 
 
 if __name__ == "__main__":
