@@ -5,7 +5,7 @@ This is the core API for the trading desk support system.
 Traders and support staff use this API to fetch prices, manage risk, and execute trades.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -35,6 +35,13 @@ class Position(BaseModel):
     quantity: int
     avg_price: float
     current_price: float
+
+
+class PriceQuote(BaseModel):
+    """Bid/ask quote for a single instrument."""
+    symbol: str
+    bid: float
+    ask: float
 
 
 @app.get("/", response_model=MessageResponse)
@@ -75,6 +82,26 @@ async def get_positions():
         Position(symbol="DBR 0% 2032", quantity=500000, avg_price=96.80, current_price=97.35),
         Position(symbol="EURUSD", quantity=1000000, avg_price=1.0850, current_price=1.0892),
     ]
+
+
+# Mock quotes, keyed by symbol. Phase 2 replaces this with a real source.
+MOCK_QUOTES = {
+    "EURUSD": {"bid": 1.0850, "ask": 1.0852},
+    "INGA.AS": {"bid": 14.83, "ask": 14.85},
+    "ASML.AS": {"bid": 668.20, "ask": 668.50},
+}
+
+
+@app.get("/prices/{symbol}", response_model=PriceQuote)
+async def get_price(symbol: str):
+    """
+    Get the current bid/ask quote for one instrument.
+    `symbol` comes straight from the URL path, e.g. /prices/EURUSD.
+    """
+    quote = MOCK_QUOTES.get(symbol)
+    if quote is None:
+        raise HTTPException(status_code=404, detail=f"No quote found for symbol: {symbol}")
+    return PriceQuote(symbol=symbol, bid=quote["bid"], ask=quote["ask"])
 
 
 if __name__ == "__main__":
