@@ -29,3 +29,6 @@ docker/minio_data/
 *recovery-codes*
 *.key
 *.pem
+
+# Ustawienia edytora
+.vscode/
